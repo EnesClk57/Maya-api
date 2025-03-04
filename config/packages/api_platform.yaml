@@ -1,0 +1,13 @@
+api_platform:
+  title: Maya API REST
+  version: 1.0.0
+  defaults:
+    stateless: true
+    cache_headers:
+      vary: ["Content-Type", "Authorization", "Origin"]
+  formats:
+    json: ["application/json"]
+    multipart: ["multipart/form-data"]
+  error_formats:
+    jsonproblem: ["application/problem+json"]
+    json: ["application/json"]
