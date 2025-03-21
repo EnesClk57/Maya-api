@@ -35,6 +35,15 @@ security:
   # Easy way to control access for large sections of your site
   # Note: Only the *first* access control that matches will be used
   access_control:
+    # correspond à /admin/users/*
+    - { path: "^/admin/users", roles: ROLE_SUPER_ADMIN }
+    # correspond à /admin/* sauf si cela correspondait à la règle précédente
+    - { path: "^/admin", roles: ROLE_ADMIN }
+    # ou nécessite ROLE_GEST ou IS_AUTHENTICATED_FULLY pour /gestion*
+    - { path: "^/gestion", roles: [IS_AUTHENTICATED_FULLY, ROLE_GEST] }
+    # la valeur de 'path' peut être n'importe quelle expression régulière
+    # (celle-ci va correspondre aux URLs comme /api/post/7298
+    # et /api/comment/528491)
     - { path: ^/$, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI
     - { path: ^/api/docs, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI docs
     - { path: ^/auth, roles: PUBLIC_ACCESS }
@@ -43,6 +52,7 @@ security:
     - { path: ^/api/get/panier, roles: PUBLIC_CLIENT }
     - { path: ^/api/categories, roles: ROLE_ADMIN }
     - { path: ^/api, roles: [ROLE_ADMIN, ROLE_GESTION] }
+
     # - { path: ^/admin, roles: ROLE_ADMIN }
     # - { path: ^/profile, roles: ROLE_USER }
 
