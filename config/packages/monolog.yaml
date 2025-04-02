@@ -11,17 +11,17 @@ when@dev:
         path: "%kernel.logs_dir%/%kernel.environment%.all.log"
         level: info
         channels: ["!event"]
-    doctrine:
-      type: rotating_file
-      max_files: 3
-      path: "%kernel.logs_dir%/%kernel.environment%.doctrine.log"
-      channels: ["doctrine"]
-    login:
-      type: rotating_file
-      max_files: 3
-      path: "%kernel.logs_dir%/%kernel.environment%.security.log"
-      channels:
-        ["security"]
+      doctrine:
+        type: rotating_file
+        max_files: 3
+        path: "%kernel.logs_dir%/%kernel.environment%.doctrine.log"
+        channels: ["doctrine"]
+      login:
+        type: rotating_file
+        max_files: 3
+        path: "%kernel.logs_dir%/%kernel.environment%.security.log"
+        channels:
+          ["security"]
         # uncomment to get logging in your browser
         # you may have to allow bigger header sizes in your Web server configuration
         #firephp:

@@ -6,11 +6,8 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CategorieRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-
-
 use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
-
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -65,7 +62,8 @@ class Categorie
     #[ApiProperty(types: ['https://schema.org/imageUrl'])]
     #[Groups(['categorie:read', 'produit:read'])]
     public ?string $imageUrl = null;
-    // NOTE: This is not a mapped field of entity metadata, just a simple property.
+
+    // Champ pour le téléchargement avec VichUploaderBundle
     #[Vich\UploadableField(
         mapping: 'categories',
         fileNameProperty: 'imageName',
@@ -74,7 +72,8 @@ class Categorie
     #[Groups(['categorie:write'])]
     private ?File $imageFile = null;
 
-    #[ORM\Column(nullable: true)]
+    // Modification : On mappe ce champ à la colonne "nom_image"
+    #[ORM\Column(name: "nom_image", type: "string", length: 20, nullable: true)]
     private ?string $imageName = null;
 
     #[ORM\Column(nullable: true)]
@@ -94,8 +93,6 @@ class Categorie
         $this->produits = new ArrayCollection();
     }
 
-
-
     public function getId(): ?int
     {
         return $this->id;
@@ -109,20 +106,17 @@ class Categorie
     public function setLibelle(string $libelle): static
     {
         $this->libelle = $libelle;
-
         return $this;
     }
 
     public function getImageUrl(): ?string
     {
-        return '/images/categories/' . $this->imageName; // pour simplifier
+        // Construit l'URL de l'image à partir du nom enregistré
+        return '/images/categories/' . $this->imageName;
     }
+
     /**
-     * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
-     * of 'UploadedFile' is injected into this setter to trigger the update. If this
-     * bundle's configuration parameter 'inject_on_load' is set to 'true' this setter
-     * must be able to accept an instance of 'File' as the bundle will inject one here
-     * during Doctrine hydration.
+     * Permet de setter le fichier image.
      *
      * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile|null $imageFile
      */
@@ -130,28 +124,31 @@ class Categorie
     {
         $this->imageFile = $imageFile;
         if (null !== $imageFile) {
-            // It is required that at least one field changes if you are using
-            // doctrine
-            // otherwise the event listeners won't be called and the file is lost
+            // Nécessaire pour déclencher la mise à jour en base de données
             $this->updatedAt = new \DateTimeImmutable();
         }
     }
+
     public function getImageFile(): ?File
     {
         return $this->imageFile;
     }
+
     public function setImageName(?string $imageName): void
     {
         $this->imageName = $imageName;
     }
+
     public function getImageName(): ?string
     {
         return $this->imageName;
     }
+
     public function setImageSize(?int $imageSize): void
     {
         $this->imageSize = $imageSize;
     }
+
     public function getImageSize(): ?int
     {
         return $this->imageSize;
@@ -171,19 +168,16 @@ class Categorie
             $this->produits->add($produit);
             $produit->setCategorie($this);
         }
-
         return $this;
     }
 
     public function removeProduit(Produit $produit): static
     {
         if ($this->produits->removeElement($produit)) {
-            // set the owning side to null (unless already changed)
             if ($produit->getCategorie() === $this) {
                 $produit->setCategorie(null);
             }
         }
-
         return $this;
     }
 }

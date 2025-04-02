@@ -1,32 +1,36 @@
 security:
-  # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+  # https://symfony.com/doc/current/security.html#registering-the-user-hashingpasswords
   password_hashers:
-    App\Entity\User: "auto"
-  # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+    App\Entity\User: 'auto'
+
+  # https://symfony.com/doc/current/security.html#loading-the-user-the-userprovider
   providers:
     # used to reload user from session & other features (e.g. switch_user)
     users:
       entity:
         class: App\Entity\User
         property: email
+
   firewalls:
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
+
     api:
       pattern: ^/api/
       stateless: true
       provider: users
       jwt: ~
+
     main:
       json_login:
-        check_path: auth
+        check_path: auth # The name in routes.yaml is enough for mapping
         username_path: email
         password_path: password
         success_handler: lexik_jwt_authentication.handler.authentication_success
         failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
-      # activate different ways to authenticate
+      # Activate different ways to authenticate
       # https://symfony.com/doc/current/security.html#the-firewall
 
       # https://symfony.com/doc/current/security/impersonating_user.html
@@ -35,24 +39,10 @@ security:
   # Easy way to control access for large sections of your site
   # Note: Only the *first* access control that matches will be used
   access_control:
-    # correspond à /admin/users/*
-    - { path: "^/admin/users", roles: ROLE_SUPER_ADMIN }
-    # correspond à /admin/* sauf si cela correspondait à la règle précédente
-    - { path: "^/admin", roles: ROLE_ADMIN }
-    # ou nécessite ROLE_GEST ou IS_AUTHENTICATED_FULLY pour /gestion*
-    - { path: "^/gestion", roles: [IS_AUTHENTICATED_FULLY, ROLE_GEST] }
-    # la valeur de 'path' peut être n'importe quelle expression régulière
-    # (celle-ci va correspondre aux URLs comme /api/post/7298
-    # et /api/comment/528491)
     - { path: ^/$, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI
     - { path: ^/api/docs, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI docs
     - { path: ^/auth, roles: PUBLIC_ACCESS }
-    - { path: ^/api/categories, methods: GET, roles: PUBLIC_ACCESS }
-    - { path: ^/api/produits, methods: GET, roles: PUBLIC_ACCESS }
-    - { path: ^/api/get/panier, roles: PUBLIC_CLIENT }
-    - { path: ^/api/categories, roles: ROLE_ADMIN }
-    - { path: ^/api, roles: [ROLE_ADMIN, ROLE_GESTION] }
-
+    - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
     # - { path: ^/admin, roles: ROLE_ADMIN }
     # - { path: ^/profile, roles: ROLE_USER }
 
